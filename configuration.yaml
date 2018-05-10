@@ -1,0 +1,214 @@
+homeassistant:
+  # Name of the location where Home Assistant is running
+  name: Home
+  # Location required to calculate the time the sun rises and sets
+  latitude: !secret home_latitude
+  longitude: !secret home_longitude
+  # Impacts weather/sunrise data (altitude above sea level in meters)
+  elevation: !secret home_elevation
+  # metric for Metric, imperial for Imperial
+  unit_system: metric
+  # Pick yours from here: http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+  time_zone: Australia/Melbourne
+  # Include Packages
+  packages: !include_dir_named packages
+
+# Customizations
+  customize: !include includes/customize.yaml
+  customize_domain: {}
+  customize_glob: {}
+
+# Enables the frontend
+http:
+  # Uncomment this to add a password (recommended!)
+  api_password: !secret api_password
+  base_url: !secret base_url
+
+panel_iframe:
+# Hass Configurator Panel
+  configurator:
+    title: IDE
+    icon: mdi:wrench
+    url: !secret ide_url
+  terminal:
+    title: Terminal
+    icon: mdi:console-line
+    url: !secret terminal_url
+
+panel_custom:
+# Floorplan Panel
+  - name: floorplan
+    sidebar_title: Floorplan
+    sidebar_icon: mdi:home
+    url_path: floorplan
+    config: !include floorplan.yaml
+
+# Checks for available updates
+updater:
+
+# Discover some devices automatically
+discovery:
+  ignore:
+  - netgear_router
+
+# Allows you to issue voice commands from the frontend in enabled browsers
+conversation:
+
+# Enables support for tracking state changes over time.
+history:
+
+# Add Configuration Panel
+config:
+
+# View all events in a logbook
+logbook: !include includes/logbook.yaml
+
+# Track the sun
+sun:
+
+# Text to speech
+tts:
+
+- platform: amazon_polly
+  aws_access_key_id: !secret aws_access_key_ID
+  aws_secret_access_key: !secret aws_secret_access_key
+  text_type: ssml
+  voice: Joanna
+
+# Purge Database Interval
+recorder:
+  purge_interval: 2
+  purge_keep_days: 14
+
+# Media Player - Spotify, no longer used.
+
+# media_player:
+#   - platform: spotify
+#     client_id: !secret spotify_client_id
+#     client_secret: !secret spotify_client_secret
+
+# Camera (Synology)
+camera:
+  - platform: synology
+    url: !secret synologycam_url
+    username: !secret synologycam_username
+    password: !secret synologycam_password
+    verify_ssl: False
+    timeout: 15
+#  - platform: onvif
+#    name: front_door
+#    host: !secret sensor_onvif_host1
+#    username: !secret sensor_onvif_username
+#    password: !secret sensor_onvif_password
+#    port: !secret sensor_onvif_port
+#  - platform: onvif
+#    name: back_deck
+#    host: !secret sensor_onvif_host2
+#    username: !secret sensor_onvif_username
+#    password: !secret sensor_onvif_password
+#    port: !secret sensor_onvif_port
+
+# IFTTT Key
+ifttt:
+  key: !secret ifttt_api
+
+# iOS App
+ios:
+
+# Homekit
+homekit:
+
+# Device Tracking
+# MQTT (Local Broker)
+mqtt:
+  broker: !secret local_mqtt_broker
+  port: !secret local_mqtt_port
+  username: !secret local_mqtt_username
+  password: !secret local_mqtt_password
+
+#  broker: !secret cloud_mqtt_broker
+#  port: !secret cloud_mqtt_port
+#  username: !secret cloud_mqtt_username
+#  password: !secret cloud_mqtt_password
+
+device_tracker:
+# Google Maps API Tracking
+  - platform: google_maps
+    username: !secret google_mapsapi_username
+    password: !secret google_mapsapi_password
+# MQTT / Zanzito based device tracking
+  - platform: mqtt_json
+    devices:
+      trents_galaxy: zanzito/trent/location
+# NMAP Based Device Tracking
+  - platform: nmap_tracker
+    hosts: !secret nmap_hosts
+    exclude:
+     - !secret hassbian_ip
+     - !secret sensor_synology_host
+
+#ZWave Devices
+zwave:
+  usb_path: /dev/ttyACM0
+  network_key: !secret secure_zwave_key
+#  polling_interval: 60000
+#  autoheal: true
+
+# Logitech Harmony Living Room
+remote:
+  - platform: harmony
+    name: !secret harmony_name
+    host: !secret harmony_ip
+    activity: Watch TV
+xiaomi_aqara:
+  gateways:
+   - mac: !secret xiaomimac
+     key: !secret xiaomikey
+
+############
+# Additional Zones
+############
+zone:
+  name: !secret zone_name
+  latitude: !secret zone_latitude
+  longitude: !secret zone_longitude
+  icon: mdi:server-network
+  radius: 250
+
+zone 2:
+  name: !secret zone2_name
+  latitude: !secret zone2_latitude
+  longitude: !secret zone2_longitude
+  icon: mdi:hospital-building
+  radius: 250
+
+zone 3:
+  name: Home
+  latitude: !secret home_latitude
+  longitude: !secret home_longitude
+  icon: mdi:home
+  radius: 150
+
+############
+# Includes
+############
+
+# Single Files
+
+#dialogflow: !include includes/dialogflow.yaml
+light: !include includes/light.yaml
+notify: !include includes/notify.yaml
+weblink: !include includes/weblink.yaml
+binary_sensor: !include includes/binary_sensor.yaml
+group: !include includes/group.yaml
+google_assistant: !include includes/google_assistant.yaml
+sensor: !include includes/sensor.yaml
+scene: !include includes/scene.yaml
+script: !include includes/script.yaml
+switch: !include includes/switch.yaml
+#image_processing: !include includes/image_processing.yaml
+
+# Merge List
+
+# Non Editor Automations
+automation: !include_dir_merge_list includes/automation
